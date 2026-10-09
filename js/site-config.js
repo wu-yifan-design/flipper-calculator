@@ -15,8 +15,8 @@
   const SITE_CONFIG = {
     analytics: {
       provider: "supabase", // "none" | "supabase" | "webhook"
-      supabaseUrl: "", // e.g. "https://abcdefghijklmno.supabase.co"  (no trailing slash)
-      anonKey: "", // Supabase anon/public key (Project Settings -> API). Insert-only via RLS.
+      supabaseUrl: "https://nsdptlgueawdsqluwmoy.supabase.co", // e.g. "https://abcdefghijklmno.supabase.co"  (no trailing slash)
+      anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zZHB0bGd1ZWF3ZHNxbHV3bW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MjA1NjgsImV4cCI6MjEwNzA5NjU2OH0._eb_zeq2bhO91YgAAcPhXJMnIbXbCWe3XbQDXgKSocE", // Supabase anon/public key (Project Settings -> API). Insert-only via RLS.
       endpoint: "", // only for provider "webhook"
       site: "flipper-calculator",
     },
