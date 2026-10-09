@@ -176,12 +176,19 @@
       return `${Fmt.pct(t1.rate)} of ${Fmt.usd(base)}${tax}`;
     }
 
+    /** Shape, not hue, distinguishes states: check = works, minus = below target/counter. */
+    static badgeIcon(tone) {
+      if (tone === "good") return `<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.6 8.6 2.2 6.2l.8-.8 1.6 1.6 4.4-4.4.8.8z" fill="currentColor"/></svg>`;
+      if (tone === "bad") return `<svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 5.4h5v1.2h-5z" fill="currentColor"/></svg>`;
+      return "";
+    }
+
     static setResult(id, label, value, note, tone = "", badge = "") {
       const badgeCls = tone === "good" ? "badge-success" : tone === "bad" ? "badge-critical" : "";
       CalculatorPage.el(id).innerHTML = `<div class="result ${tone}">
         <div class="r-label">${label}</div>
         <div class="r-value">${value}</div>
-        ${badge ? `<span class="badge ${badgeCls}">${badge}</span>` : ""}
+        ${badge ? `<span class="badge ${badgeCls}">${CalculatorPage.badgeIcon(tone)}${badge}</span>` : ""}
         ${note ? `<div class="r-note">${note}</div>` : ""}</div>`;
     }
 

@@ -15,7 +15,7 @@ self.addEventListener("fetch", (event) => {
       () =>
         new Response(
           '<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline</title>' +
-            '<body style="font-family:system-ui;padding:24px;color:#303030;background:#f1f1f1">' +
+            '<body style="font-family:system-ui;padding:24px;color:#f5f5f7;background:#0a0a0a">' +
             "<h1 style=\"font-size:20px\">You're offline</h1><p>Offer Floor needs a connection to load current eBay rates. Reconnect and reload.</p>",
           { headers: { "Content-Type": "text/html; charset=utf-8" } }
         )

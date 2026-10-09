@@ -1,6 +1,6 @@
 /*
- * Design tokens — values matched to the public @shopify/polaris-tokens package
- * (current unpkg build, checked 2026-10-09). Names are our own (--t-*); no Shopify assets used.
+ * Design tokens. Type/space/radius scales follow Polaris (@shopify/polaris-tokens, checked 2026-10-09);
+ * colors are our own DARK theme (black→charcoal + film grain, green as the only accent). No Shopify assets.
  * Every page imports this file first, then assets/styles.css (components).
  */
 :root {
@@ -45,50 +45,66 @@
   --t-radius-400: 16px;
   --t-radius-full: 9999px;
 
-  /* Color roles */
-  --t-bg: #f1f1f1;                    /* page */
-  --t-surface: #ffffff;               /* cards */
-  --t-surface-secondary: #f7f7f7;     /* subdued rows, footers */
-  --t-surface-hover: #f7f7f7;
-  --t-surface-selected: #ebebeb;
-  --t-text: #303030;
-  --t-text-secondary: #616161;
-  --t-text-disabled: #b5b5b5;
-  --t-text-link: #005bd3;
-  --t-border: #e3e3e3;
-  --t-border-secondary: #ebebeb;
-  --t-border-input: #8a8a8a;
-  --t-border-focus: #005bd3;
-  --t-brand: #303030;                 /* primary button fill */
-  --t-brand-hover: #1a1a1a;
-  --t-on-brand: #ffffff;
+  /* Color roles — DARK theme. Green (--t-accent) is the ONLY hue; everything else is neutral. */
+  color-scheme: dark;
+  --t-bg: #0a0a0a;                         /* page base + manifest/theme-color */
+  --t-bg-top: #0a0a0a;                     /* gradient start */
+  --t-bg-bottom: #1c1c1e;                  /* gradient end */
+  --t-glow: rgba(255, 255, 255, 0.05);     /* neutral radial glow */
+  --t-grain-opacity: 0.07;
+  --t-surface: rgba(28, 28, 30, 0.78);     /* cards (≈ #1c1c1e over the gradient) */
+  --t-surface-solid: #1c1c1e;              /* fallback / contrast reference */
+  --t-surface-raised: rgba(44, 44, 46, 0.72); /* app bar, banner (blurred) */
+  --t-surface-secondary: rgba(255, 255, 255, 0.04);
+  --t-surface-hover: rgba(255, 255, 255, 0.06);
+  --t-surface-selected: rgba(61, 220, 132, 0.14);
+  --t-field: rgba(0, 0, 0, 0.35);          /* inputs (≈ #121214) */
+  --t-text: #f5f5f7;
+  --t-text-secondary: #a1a1a6;
+  --t-text-disabled: #6e6e73;
+  --t-border: rgba(255, 255, 255, 0.10);   /* hairlines */
+  --t-border-secondary: rgba(255, 255, 255, 0.06);
+  --t-border-input: #6e6e73;               /* 3.7:1 vs field — meets 1.4.11 */
+  --t-border-input-hover: #8e8e93;
+  --t-border-strong: rgba(255, 255, 255, 0.36); /* outlined "loss" states */
 
-  --t-success: #047b5d;               /* fill / large green numbers */
-  --t-success-surface: #cdfed4;
-  --t-success-surface-2: #affebf;     /* badge */
-  --t-success-text: #014b40;
-  --t-critical: #c70a24;
-  --t-critical-surface: #fee8eb;
-  --t-critical-text: #8e0b21;
-  --t-warning-surface: #fff1e3;
-  --t-warning-surface-2: #ffd6a4;
-  --t-warning-text: #5e4200;
-  --t-info-surface: #eaf4ff;
-  --t-info-surface-2: #d5ebff;
-  --t-info-text: #003a5a;
+  --t-accent: #3ddc84;                     /* THE accent */
+  --t-accent-hover: #5ee69b;
+  --t-accent-pressed: #2fc472;
+  --t-on-accent: #0a0a0a;                  /* text on green */
+  --t-accent-surface: rgba(61, 220, 132, 0.10);
+  --t-accent-surface-2: rgba(61, 220, 132, 0.16);
+  --t-accent-border: rgba(61, 220, 132, 0.35);
 
-  /* Elevation */
-  --t-shadow-100: 0 1px 0 0 rgba(26, 26, 26, 0.07);
-  --t-shadow-200: 0 3px 1px -1px rgba(26, 26, 26, 0.07);
-  --t-shadow-bevel: 1px 0 0 0 rgba(0, 0, 0, 0.13) inset, -1px 0 0 0 rgba(0, 0, 0, 0.13) inset,
-    0 -1px 0 0 rgba(0, 0, 0, 0.17) inset, 0 1px 0 0 rgba(204, 204, 204, 0.5) inset;
-  --t-shadow-card: var(--t-shadow-bevel), var(--t-shadow-100);
-  --t-shadow-button: 0 -1px 0 0 #b5b5b5 inset, 0 0 0 1px rgba(0, 0, 0, 0.1) inset, 0 0.5px 0 1.5px #fff inset;
-  --t-shadow-button-primary: 0 -1px 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 0 1px #303030 inset,
-    0 0.5px 0 1.5px rgba(255, 255, 255, 0.25) inset;
-  --t-shadow-button-inset: -1px 0 1px 0 rgba(26, 26, 26, 0.122) inset, 1px 0 1px 0 rgba(26, 26, 26, 0.122) inset,
-    0 2px 1px 0 rgba(26, 26, 26, 0.2) inset;
-  --t-focus-ring: 0 0 0 2px #fff, 0 0 0 4px var(--t-border-focus);
+  /* Semantic aliases (kept for components). Loss/critical is NEUTRAL + icon/label, never a 2nd hue. */
+  --t-text-link: var(--t-accent);
+  --t-border-focus: var(--t-accent);
+  --t-brand: var(--t-accent);
+  --t-brand-hover: var(--t-accent-hover);
+  --t-on-brand: var(--t-on-accent);
+  --t-success: var(--t-accent);
+  --t-success-surface: var(--t-accent-surface);
+  --t-success-surface-2: var(--t-accent-surface-2);
+  --t-success-text: var(--t-accent);
+  --t-critical: var(--t-text);
+  --t-critical-surface: transparent;
+  --t-critical-text: var(--t-text);
+  --t-warning-surface: var(--t-surface-secondary);
+  --t-warning-surface-2: var(--t-border-strong);
+  --t-warning-text: var(--t-text);
+  --t-info-surface: var(--t-surface-raised);
+  --t-info-surface-2: var(--t-border);
+  --t-info-text: var(--t-text-secondary);
+
+  /* Elevation (dark: hairline + soft drop) */
+  --t-shadow-100: 0 1px 0 0 rgba(0, 0, 0, 0.4);
+  --t-shadow-200: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+  --t-shadow-bevel: inset 0 0 0 1px var(--t-border), inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+  --t-shadow-card: var(--t-shadow-bevel), 0 1px 2px rgba(0, 0, 0, 0.5);
+  --t-shadow-button: inset 0 0 0 1px rgba(255, 255, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --t-shadow-button-primary: inset 0 -1px 0 rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 0 1px rgba(61, 220, 132, 0.4);
+  --t-shadow-button-inset: inset 0 2px 2px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --t-focus-ring: 0 0 0 2px #0a0a0a, 0 0 0 4px var(--t-accent);
 
   /* Layout */
   --t-page-max: 1040px;
