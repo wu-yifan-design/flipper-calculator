@@ -1,0 +1,27 @@
+<!doctype html>
+<!--
+  WAITLIST PAGE TEMPLATE — copy to <product>.html, then:
+   1. Add the product to js/site-config.js -> waitlists (title, pitch, prices) and set enabled: true.
+   2. Replace PRODUCT_ID, TITLE, HERO copy below.
+   3. Remove the noindex meta when launching.
+  Analytics (page_visit, email_submitted, preorder_click) and utm/referrer attribution are automatic.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>TITLE</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%83%8F%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="hero"><h1>TITLE</h1><p class="sub">HERO one-liner.</p></header>
+  <section data-waitlist="PRODUCT_ID"></section>
+  <footer class="foot"><p><a href="./">← Offer Floor calculator</a></p></footer>
+  <script src="js/site-config.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/waitlist.js"></script>
+  <script src="js/waitlist-page.js"></script>
+</body>
+</html>
