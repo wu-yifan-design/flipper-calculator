@@ -2,18 +2,22 @@
  * Site config: the ONLY place to plug in the analytics/form backend.
  *
  * provider:
- *   "none"    – no network calls; events are logged to console + localStorage
- *               ("flip_debug_events") so you can test locally.
- *   "webhook" – POST each event as JSON (Content-Type text/plain, no CORS preflight)
- *               to `endpoint`. Works with the included Google Apps Script
- *               (backend/apps-script/Code.gs), a Cloudflare Worker, Supabase edge
- *               function, etc. Emails go to the same endpoint (event "email_submitted").
+ *   "none"     – no network calls; events are logged to console + localStorage
+ *                ("flip_debug_events") so you can test locally.
+ *   "supabase" – insert rows via Supabase REST (anon key, insert-only RLS):
+ *                events -> {supabaseUrl}/rest/v1/events, emails -> {supabaseUrl}/rest/v1/emails.
+ *                The anon key is PUBLIC by design (insert-only). NEVER put the metrics
+ *                read key (METRICS_KEY) here — it lives only in the reader's env.
+ *   "webhook"  – POST each event as JSON (text/plain) to `endpoint` (generic fallback).
+ * If the chosen provider is missing its URL/key, it falls back to "none".
  */
 (function (root) {
   const SITE_CONFIG = {
     analytics: {
-      provider: "none", // "none" | "webhook"
-      endpoint: "", // e.g. "https://script.google.com/macros/s/XXXX/exec"
+      provider: "supabase", // "none" | "supabase" | "webhook"
+      supabaseUrl: "", // e.g. "https://abcdefghijklmno.supabase.co"  (no trailing slash)
+      anonKey: "", // Supabase anon/public key (Project Settings -> API). Insert-only via RLS.
+      endpoint: "", // only for provider "webhook"
       site: "flipper-calculator",
     },
     // Waitlist products. Day-8 page = add a new HTML file from waitlist-template

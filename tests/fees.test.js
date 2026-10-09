@@ -129,3 +129,26 @@ test("Standard Envelope 1/2/3 oz tiers are selectable with verified prices", () 
   assert.equal(FeeCalculator.shippingCost("ebay_standard_envelope_2oz", 0, RATES), 1.07);
   assert.equal(FeeCalculator.shippingCost("ebay_standard_envelope_3oz", 0, RATES), 1.36);
 });
+
+test("Supabase mapping: event row matches schema columns, email never in events", () => {
+  const { SupabaseMapper } = require("../js/analytics.js");
+  const payload = {
+    event: "email_submitted", site: "flipper-calculator", page: "/flipper-calculator/", ts: "2026-10-09T05:00:00Z",
+    visitor_id: "v1", source: "reddit", first_source: "x", utm_source: "reddit", utm_medium: "",
+    utm_campaign: "howto1", utm_content: "c1", referrer: "www.reddit.com", product: "offer-floor-pro", email: "a@b.co",
+  };
+  const reqs = SupabaseMapper.requests(payload, "https://abc.supabase.co/");
+  assert.deepEqual(reqs.map((r) => r.url), ["https://abc.supabase.co/rest/v1/events", "https://abc.supabase.co/rest/v1/emails"]);
+  const ev = reqs[0].body;
+  assert.deepEqual(Object.keys(ev).sort(), ["event", "first_source", "page", "props", "referrer_host", "source", "utm_campaign", "utm_medium", "utm_source", "visitor_id"].sort());
+  assert.equal(ev.referrer_host, "www.reddit.com");
+  assert.equal(ev.utm_medium, null);
+  assert.deepEqual(ev.props, { site: "flipper-calculator", ts: "2026-10-09T05:00:00Z", utm_content: "c1", product: "offer-floor-pro" });
+  assert.ok(!JSON.stringify(ev).includes("a@b.co"));
+  assert.deepEqual(reqs[1].body, { email: "a@b.co", visitor_id: "v1", source: "reddit", product: "offer-floor-pro" });
+  const h = SupabaseMapper.headers("ANON");
+  assert.equal(h.Authorization, "Bearer ANON");
+  assert.equal(h.Prefer, "return=minimal");
+  // Non-email events produce one request.
+  assert.equal(SupabaseMapper.requests({ ...payload, event: "page_visit", email: undefined }, "https://abc.supabase.co").length, 1);
+});

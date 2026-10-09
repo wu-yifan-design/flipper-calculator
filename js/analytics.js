@@ -83,6 +83,48 @@
     }
   }
 
+  /** Maps the internal event payload to the Supabase table columns. */
+  class SupabaseMapper {
+    static EVENT_COLUMNS = ["event", "visitor_id", "source", "first_source", "utm_source", "utm_campaign", "utm_medium", "page"];
+    static NOT_PROPS = new Set([...SupabaseMapper.EVENT_COLUMNS, "referrer", "email"]);
+
+    static eventRow(d) {
+      const row = {};
+      for (const c of SupabaseMapper.EVENT_COLUMNS) row[c] = d[c] == null || d[c] === "" ? null : String(d[c]).slice(0, 200);
+      row.referrer_host = d.referrer ? String(d.referrer).slice(0, 200) : null;
+      const props = {};
+      for (const [k, v] of Object.entries(d)) if (!SupabaseMapper.NOT_PROPS.has(k) && v !== "" && v != null) props[k] = v;
+      row.props = props; // never contains the email
+      return row;
+    }
+
+    static emailRow(d) {
+      return {
+        email: String(d.email || "").trim().slice(0, 254),
+        visitor_id: d.visitor_id || null,
+        source: d.source || null,
+        product: d.product || null,
+      };
+    }
+
+    static headers(anonKey) {
+      return {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      };
+    }
+
+    /** Returns [{url, body}] requests for one payload. */
+    static requests(d, supabaseUrl) {
+      const base = supabaseUrl.replace(/\/+$/, "") + "/rest/v1";
+      const reqs = [{ url: `${base}/events`, body: SupabaseMapper.eventRow(d) }];
+      if (d.event === "email_submitted" && d.email) reqs.push({ url: `${base}/emails`, body: SupabaseMapper.emailRow(d) });
+      return reqs;
+    }
+  }
+
   class Analytics {
     static config() {
       return (root.SITE_CONFIG && root.SITE_CONFIG.analytics) || { provider: "none" };
@@ -107,25 +149,44 @@
       };
     }
 
+    /** Effective provider: falls back to "none" when the chosen one isn't configured. */
+    static provider(cfg = Analytics.config()) {
+      if (cfg.provider === "supabase" && cfg.supabaseUrl && cfg.anonKey) return "supabase";
+      if (cfg.provider === "webhook" && cfg.endpoint) return "webhook";
+      return "none";
+    }
+
     /** Fire-and-forget. Returns a promise resolving true if handed to the network. */
     static async track(event, props = {}) {
       const data = Analytics.payload(event, props);
       const cfg = Analytics.config();
-      if (cfg.provider !== "webhook" || !cfg.endpoint) {
-        Analytics.debugLog(data);
-        return false;
-      }
-      const body = JSON.stringify(data);
+      const provider = Analytics.provider(cfg);
       try {
-        if (!props.email && root.navigator && root.navigator.sendBeacon) {
-          if (root.navigator.sendBeacon(cfg.endpoint, new Blob([body], { type: "text/plain" }))) return true;
+        if (provider === "supabase") {
+          const headers = SupabaseMapper.headers(cfg.anonKey);
+          const results = await Promise.all(
+            SupabaseMapper.requests(data, cfg.supabaseUrl).map((r) =>
+              fetch(r.url, { method: "POST", headers, body: JSON.stringify(r.body), keepalive: true })
+            )
+          );
+          const ok = results.every((r) => r.ok);
+          if (!ok) Analytics.debugLog({ ...data, email: undefined, error: results.map((r) => r.status).join(",") });
+          return ok;
         }
-        await fetch(cfg.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body, keepalive: true });
-        return true;
+        if (provider === "webhook") {
+          const body = JSON.stringify(data);
+          if (!props.email && root.navigator && root.navigator.sendBeacon) {
+            if (root.navigator.sendBeacon(cfg.endpoint, new Blob([body], { type: "text/plain" }))) return true;
+          }
+          await fetch(cfg.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body, keepalive: true });
+          return true;
+        }
       } catch (e) {
-        Analytics.debugLog({ ...data, error: String(e) });
+        Analytics.debugLog({ ...data, email: undefined, error: String(e) });
         return false;
       }
+      Analytics.debugLog(data);
+      return false;
     }
 
     static debugLog(data) {
@@ -149,7 +210,7 @@
     }
   }
 
-  const api = { Attribution, Analytics, Store };
+  const api = { Attribution, Analytics, Store, SupabaseMapper };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else Object.assign(root, api);
 })(typeof self !== "undefined" ? self : this);
