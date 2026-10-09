@@ -1,0 +1,17 @@
+{
+  "name": "Offer Floor — eBay card flip calculator",
+  "short_name": "Offer Floor",
+  "description": "Max buy price, lowest offer to accept and promote-or-not for eBay sports card sellers.",
+  "id": "./",
+  "start_url": "./?utm_source=homescreen&utm_medium=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f1f1f1",
+  "theme_color": "#f1f1f1",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

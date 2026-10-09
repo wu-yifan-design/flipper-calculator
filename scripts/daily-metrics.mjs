@@ -17,12 +17,14 @@ class Report {
     const out = new Map();
     for (const r of rows) {
       const k = `${r.day}|${r.source}`;
-      const m = out.get(k) || { day: r.day, source: r.source, visits: 0, uniques: 0, calculated: 0, calc_rate: "-", emails: 0, preorders: 0 };
+      const m = out.get(k) || { day: r.day, source: r.source, visits: 0, uniques: 0, calculated: 0, calc_rate: "-", emails: 0, preorders: 0, a2hs_shown: 0, installs: 0 };
       const n = Number(r.events), v = Number(r.visitors);
       if (r.event === "page_visit") { m.visits = n; m.uniques = v; }
       if (r.event === "calculated") m.calculated = v;
       if (r.event === "email_submitted") m.emails = n;
       if (r.event === "preorder_click") m.preorders = n;
+      if (r.event === "a2hs_shown") m.a2hs_shown = v;
+      if (r.event === "app_installed") m.installs = n;
       out.set(k, m);
     }
     const list = [...out.values()].sort((a, b) => (a.day + a.source).localeCompare(b.day + b.source));

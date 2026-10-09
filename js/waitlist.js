@@ -46,19 +46,21 @@
               (pr) =>
                 `<button type="button" class="btn btn-outline preorder" data-plan="${pr.id}" data-amount="${pr.amount}">${WaitlistWidget.esc(p.preorderLabel)} · ${WaitlistWidget.esc(pr.label)}</button>`
             )
-            .join("")}</div><p class="fine">Test pricing — not final. No charge today.</p>`
+            .join("")}</div><p class="fine"><span class="badge badge-attention">Test pricing</span> Not final. No charge today.</p>`
         : `<button type="button" class="btn btn-outline preorder" data-plan="default" data-amount="">${WaitlistWidget.esc(p.preorderLabel)}</button>`;
 
       el.classList.add("card", "waitlist");
       el.innerHTML = `
+        <span class="badge badge-info">Early access</span>
         <h2>${WaitlistWidget.esc(p.title)}</h2>
-        <p>${WaitlistWidget.esc(p.pitch)}</p>
+        <p class="wl-pitch">${WaitlistWidget.esc(p.pitch)}</p>
         <form class="wl-form" novalidate>
           <label class="sr-only" for="wl-email-${id}">Email</label>
-          <input id="wl-email-${id}" type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+          <span class="input"><input id="wl-email-${id}" type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required></span>
           <button class="btn" type="submit">Join waitlist</button>
         </form>
         <p class="wl-msg" role="status" aria-live="polite"></p>
+        <div class="divider"></div>
         ${priceHtml}
         <p class="wl-pre-msg" role="status" aria-live="polite"></p>
         <p class="fine">We only use your email to tell you when this opens. No spam, unsubscribe anytime.</p>`;

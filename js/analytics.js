@@ -160,7 +160,8 @@
     static async track(event, props = {}) {
       const data = Analytics.payload(event, props);
       const cfg = Analytics.config();
-      const provider = Analytics.provider(cfg);
+      const allowed = !Array.isArray(cfg.serverEvents) || cfg.serverEvents.includes(event);
+      const provider = allowed ? Analytics.provider(cfg) : "none";
       try {
         if (provider === "supabase") {
           const headers = SupabaseMapper.headers(cfg.anonKey);

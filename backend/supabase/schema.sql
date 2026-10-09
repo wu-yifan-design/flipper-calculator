@@ -1,7 +1,8 @@
 create table if not exists public.events (
   id bigserial primary key,
   created_at timestamptz not null default now(),
-  event text not null check (event in ('page_visit','calculated','email_submitted','preorder_click')),
+  event text not null check (event in ('page_visit','calculated','email_submitted','preorder_click',
+                                           'a2hs_shown','a2hs_install_click','a2hs_dismissed','app_installed')),
   visitor_id text,
   source text,
   first_source text,

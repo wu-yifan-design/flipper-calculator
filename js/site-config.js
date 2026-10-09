@@ -18,6 +18,11 @@
       supabaseUrl: "https://nsdptlgueawdsqluwmoy.supabase.co", // e.g. "https://abcdefghijklmno.supabase.co"  (no trailing slash)
       anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zZHB0bGd1ZWF3ZHNxbHV3bW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MjA1NjgsImV4cCI6MjEwNzA5NjU2OH0._eb_zeq2bhO91YgAAcPhXJMnIbXbCWe3XbQDXgKSocE", // Supabase anon/public key (Project Settings -> API). Insert-only via RLS.
       endpoint: "", // only for provider "webhook"
+      // Events the backend accepts. The Supabase events table has a CHECK constraint on
+      // `event`; events not listed here are only logged locally (no failing 400s).
+      // After running backend/supabase/migrations/002_a2hs_events.sql, add:
+      //   "a2hs_shown", "a2hs_install_click", "a2hs_dismissed", "app_installed"
+      serverEvents: ["page_visit", "calculated", "email_submitted", "preorder_click"],
       site: "flipper-calculator",
     },
     // Waitlist products. Day-8 page = add a new HTML file from waitlist-template

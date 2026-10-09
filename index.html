@@ -5,94 +5,120 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Offer Floor — eBay sports card flip &amp; offer calculator</title>
   <meta name="description" content="Work backwards from the profit you want: max buy price, lowest offer to accept, and whether to promote — after eBay fees, shipping and promoted listing fees.">
-  <meta name="theme-color" content="#0f172a">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%83%8F%3C/text%3E%3C/svg%3E">
+  <meta name="theme-color" content="#f1f1f1">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Offer Floor">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="assets/tokens.css">
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-  <header class="top">
-    <h1>Offer Floor</h1>
-    <p class="sub">eBay sports card calculator — work backwards from the profit you want.</p>
-    <p id="rates-banner" class="rates-banner"></p>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <span class="mark" aria-hidden="true">OF</span>
+      <span class="app-name">Offer Floor</span>
+      <span class="badge">Free tool</span>
+    </div>
   </header>
 
-  <main id="calc">
-    <nav class="tabs" role="tablist" aria-label="What do you want to know?">
-      <button role="tab" data-tab="buy">Buy it?</button>
-      <button role="tab" data-tab="offer">Accept offer?</button>
-      <button role="tab" data-tab="promo">Promote?</button>
-    </nav>
+  <div class="page">
+    <div class="page-header">
+      <h1>eBay card flip calculator</h1>
+      <p class="sub">Work backwards from the profit you want — after eBay fees, promoted listings and shipping.</p>
+      <p id="rates-banner" class="rates-banner"></p>
+    </div>
 
-    <section class="card">
-      <h2 class="h-small">Your card</h2>
-      <div class="grid">
-        <label data-show="buy promo">Expected sale price
-          <span class="money"><input id="salePrice" inputmode="decimal" placeholder="e.g. 25.00"></span>
-        </label>
-        <label data-show="offer promo">What you paid
-          <span class="money"><input id="buyCost" inputmode="decimal" placeholder="e.g. 8.00"></span>
-        </label>
-        <label class="full">Shipping method
-          <select id="shipTier"></select>
-        </label>
-        <label id="shipCustomWrap" hidden>Your shipping cost
-          <span class="money"><input id="shipCustom" inputmode="decimal" placeholder="0.00"></span>
-        </label>
-        <label>Promoted ad rate
-          <span class="pct"><input id="adRate" inputmode="decimal"></span>
-        </label>
-        <label data-show="promo">Compare with ad rate
-          <span class="pct"><input id="adRateB" inputmode="decimal"></span>
-        </label>
-        <label data-show="buy promo">Profit you want
-          <span class="money"><input id="targetProfit" inputmode="decimal"></span>
-        </label>
-        <label data-show="offer promo">Lowest profit you'll take
-          <span class="money"><input id="floorProfit" inputmode="decimal"></span>
-        </label>
-        <label data-show="offer">Offer received <small>(optional)</small>
-          <span class="money"><input id="offer" inputmode="decimal" placeholder="e.g. 18.00"></span>
-        </label>
-      </div>
-      <details class="more">
-        <summary>Shipping charged, supplies &amp; sales tax</summary>
-        <div class="grid">
-          <label>Shipping you charge buyer
-            <span class="money"><input id="shipCharged" inputmode="decimal"></span>
-          </label>
-          <label>Supplies per order
-            <span class="money"><input id="supplies" inputmode="decimal"></span>
-          </label>
-          <label>Buyer sales tax (avg)
-            <span class="pct"><input id="taxRate" inputmode="decimal"></span>
-          </label>
+    <main id="calc">
+      <nav class="tabs" role="tablist" aria-label="What do you want to know?">
+        <button role="tab" data-tab="buy">Buy it?</button>
+        <button role="tab" data-tab="offer">Accept offer?</button>
+        <button role="tab" data-tab="promo">Promote?</button>
+      </nav>
+
+      <div class="layout">
+        <section class="card inputs" aria-labelledby="inputs-title">
+          <div class="card-header">
+            <h2 id="inputs-title" class="card-title">Your card</h2>
+            <button id="reset" class="btn-plain" type="button">Reset</button>
+          </div>
+          <div class="grid">
+            <label class="field" data-show="buy promo"><span class="field-label">Expected sale price</span>
+              <span class="input money"><input id="salePrice" inputmode="decimal" placeholder="25.00"></span>
+            </label>
+            <label class="field" data-show="offer promo"><span class="field-label">What you paid</span>
+              <span class="input money"><input id="buyCost" inputmode="decimal" placeholder="8.00"></span>
+            </label>
+            <label class="field full"><span class="field-label">Shipping method</span>
+              <span class="select"><select id="shipTier"></select></span>
+            </label>
+            <label class="field" id="shipCustomWrap" hidden><span class="field-label">Your shipping cost</span>
+              <span class="input money"><input id="shipCustom" inputmode="decimal" placeholder="0.00"></span>
+            </label>
+            <label class="field"><span class="field-label">Promoted ad rate</span>
+              <span class="input pct"><input id="adRate" inputmode="decimal"></span>
+            </label>
+            <label class="field" data-show="promo"><span class="field-label">Compare with ad rate</span>
+              <span class="input pct"><input id="adRateB" inputmode="decimal"></span>
+            </label>
+            <label class="field" data-show="buy promo"><span class="field-label">Profit you want</span>
+              <span class="input money"><input id="targetProfit" inputmode="decimal"></span>
+            </label>
+            <label class="field" data-show="offer promo"><span class="field-label">Lowest profit you'll take</span>
+              <span class="input money"><input id="floorProfit" inputmode="decimal"></span>
+            </label>
+            <label class="field" data-show="offer"><span class="field-label">Offer received <span class="optional">Optional</span></span>
+              <span class="input money"><input id="offer" inputmode="decimal" placeholder="18.00"></span>
+            </label>
+          </div>
+          <details class="disclosure">
+            <summary>Shipping charged, supplies &amp; sales tax</summary>
+            <div class="grid">
+              <label class="field"><span class="field-label">Shipping you charge buyer</span>
+                <span class="input money"><input id="shipCharged" inputmode="decimal"></span>
+              </label>
+              <label class="field"><span class="field-label">Supplies per order</span>
+                <span class="input money"><input id="supplies" inputmode="decimal"></span>
+              </label>
+              <label class="field"><span class="field-label">Buyer sales tax (avg)</span>
+                <span class="input pct"><input id="taxRate" inputmode="decimal"></span>
+              </label>
+            </div>
+            <p class="help">eBay charges its fees on the total the buyer pays, including shipping and sales tax — even though you never keep the tax.</p>
+          </details>
+        </section>
+
+        <div class="results">
+          <section class="card result-card" data-panel="buy" aria-live="polite">
+            <div class="card-header"><h2 class="card-title">Should you buy it?</h2><span class="card-caption">Max price that still hits your profit</span></div>
+            <div id="buy-result"></div>
+            <div id="buy-result-bd"></div>
+          </section>
+          <section class="card result-card" data-panel="offer" aria-live="polite" hidden>
+            <div class="card-header"><h2 class="card-title">Accept this offer?</h2><span class="card-caption">Lowest offer that still hits your floor</span></div>
+            <div id="offer-result"></div>
+            <div id="offer-result-bd"></div>
+          </section>
+          <section class="card result-card" data-panel="promo" aria-live="polite" hidden>
+            <div class="card-header"><h2 class="card-title">Promote or not?</h2><span class="card-caption">Same card, two ad rates</span></div>
+            <div id="promo-result"></div>
+            <div id="promo-result-bd"></div>
+          </section>
         </div>
-        <p class="fine">eBay charges its fees on the total the buyer pays, including shipping and sales tax — even though you never keep the tax.</p>
-      </details>
-    </section>
+      </div>
+    </main>
 
-    <section class="card" data-panel="buy">
-      <div id="buy-result"></div>
-      <div id="buy-result-bd"></div>
-    </section>
-    <section class="card" data-panel="offer" hidden>
-      <div id="offer-result"></div>
-      <div id="offer-result-bd"></div>
-    </section>
-    <section class="card" data-panel="promo" hidden>
-      <div id="promo-result"></div>
-      <div id="promo-result-bd"></div>
-    </section>
-    <p class="center"><button id="reset" class="link" type="button">Reset inputs</button></p>
-  </main>
+    <section data-waitlist="offer-floor-pro"></section>
 
-  <section data-waitlist="offer-floor-pro"></section>
-
-  <footer class="foot">
-    <p id="more-tools" hidden><a href="cleaner.html">New: card sold-price cleaner →</a></p>
-    <p>Estimates only. Fees vary by category, seller level and store subscription — check your eBay fee page. Not affiliated with eBay.</p>
-    <p>Your inputs stay in this browser (localStorage). We count anonymous page events to see what's useful.</p>
-  </footer>
+    <footer class="foot">
+      <p id="more-tools" hidden><a href="cleaner.html">New: card sold-price cleaner →</a></p>
+      <p>Estimates only. Fees vary by category, seller level and store subscription — check your eBay fee page. Not affiliated with eBay.</p>
+      <p>Your inputs stay in this browser (localStorage). We count anonymous page events to see what's useful.</p>
+    </footer>
+  </div>
 
   <script src="js/rates.js"></script>
   <script src="js/fees.js"></script>
@@ -100,5 +126,6 @@
   <script src="js/analytics.js"></script>
   <script src="js/waitlist.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/install-banner.js"></script>
 </body>
 </html>

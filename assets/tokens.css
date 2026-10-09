@@ -1,0 +1,98 @@
+/*
+ * Design tokens — values matched to the public @shopify/polaris-tokens package
+ * (current unpkg build, checked 2026-10-09). Names are our own (--t-*); no Shopify assets used.
+ * Every page imports this file first, then assets/styles.css (components).
+ */
+:root {
+  /* Typography */
+  --t-font: "Inter", -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --t-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --t-fs-275: 0.6875rem; /* 11 */
+  --t-fs-300: 0.75rem;   /* 12 caption, badge */
+  --t-fs-325: 0.8125rem; /* 13 body-sm (Polaris admin body) */
+  --t-fs-350: 0.875rem;  /* 14 body */
+  --t-fs-400: 1rem;      /* 16 inputs (no iOS zoom), body-lg */
+  --t-fs-500: 1.25rem;   /* 20 heading-lg */
+  --t-fs-600: 1.5rem;    /* 24 heading-xl */
+  --t-fs-750: 1.875rem;  /* 30 */
+  --t-fs-900: 2.25rem;   /* 36 hero number */
+  --t-fs-1000: 2.75rem;  /* 44 hero number desktop */
+  --t-fw-regular: 450;
+  --t-fw-medium: 550;
+  --t-fw-semibold: 650;
+  --t-fw-bold: 700;
+  --t-lh-tight: 1.2;
+  --t-lh: 1.45;
+
+  /* Spacing (4px base) */
+  --t-space-050: 2px;
+  --t-space-100: 4px;
+  --t-space-150: 6px;
+  --t-space-200: 8px;
+  --t-space-300: 12px;
+  --t-space-400: 16px;
+  --t-space-500: 20px;
+  --t-space-600: 24px;
+  --t-space-800: 32px;
+  --t-space-1000: 40px;
+  --t-space-1200: 48px;
+
+  /* Radius */
+  --t-radius-100: 4px;
+  --t-radius-150: 6px;
+  --t-radius-200: 8px;   /* inputs, buttons, badges */
+  --t-radius-300: 12px;  /* cards, banners */
+  --t-radius-400: 16px;
+  --t-radius-full: 9999px;
+
+  /* Color roles */
+  --t-bg: #f1f1f1;                    /* page */
+  --t-surface: #ffffff;               /* cards */
+  --t-surface-secondary: #f7f7f7;     /* subdued rows, footers */
+  --t-surface-hover: #f7f7f7;
+  --t-surface-selected: #ebebeb;
+  --t-text: #303030;
+  --t-text-secondary: #616161;
+  --t-text-disabled: #b5b5b5;
+  --t-text-link: #005bd3;
+  --t-border: #e3e3e3;
+  --t-border-secondary: #ebebeb;
+  --t-border-input: #8a8a8a;
+  --t-border-focus: #005bd3;
+  --t-brand: #303030;                 /* primary button fill */
+  --t-brand-hover: #1a1a1a;
+  --t-on-brand: #ffffff;
+
+  --t-success: #047b5d;               /* fill / large green numbers */
+  --t-success-surface: #cdfed4;
+  --t-success-surface-2: #affebf;     /* badge */
+  --t-success-text: #014b40;
+  --t-critical: #c70a24;
+  --t-critical-surface: #fee8eb;
+  --t-critical-text: #8e0b21;
+  --t-warning-surface: #fff1e3;
+  --t-warning-surface-2: #ffd6a4;
+  --t-warning-text: #5e4200;
+  --t-info-surface: #eaf4ff;
+  --t-info-surface-2: #d5ebff;
+  --t-info-text: #003a5a;
+
+  /* Elevation */
+  --t-shadow-100: 0 1px 0 0 rgba(26, 26, 26, 0.07);
+  --t-shadow-200: 0 3px 1px -1px rgba(26, 26, 26, 0.07);
+  --t-shadow-bevel: 1px 0 0 0 rgba(0, 0, 0, 0.13) inset, -1px 0 0 0 rgba(0, 0, 0, 0.13) inset,
+    0 -1px 0 0 rgba(0, 0, 0, 0.17) inset, 0 1px 0 0 rgba(204, 204, 204, 0.5) inset;
+  --t-shadow-card: var(--t-shadow-bevel), var(--t-shadow-100);
+  --t-shadow-button: 0 -1px 0 0 #b5b5b5 inset, 0 0 0 1px rgba(0, 0, 0, 0.1) inset, 0 0.5px 0 1.5px #fff inset;
+  --t-shadow-button-primary: 0 -1px 0 1px rgba(0, 0, 0, 0.8) inset, 0 0 0 1px #303030 inset,
+    0 0.5px 0 1.5px rgba(255, 255, 255, 0.25) inset;
+  --t-shadow-button-inset: -1px 0 1px 0 rgba(26, 26, 26, 0.122) inset, 1px 0 1px 0 rgba(26, 26, 26, 0.122) inset,
+    0 2px 1px 0 rgba(26, 26, 26, 0.2) inset;
+  --t-focus-ring: 0 0 0 2px #fff, 0 0 0 4px var(--t-border-focus);
+
+  /* Layout */
+  --t-page-max: 1040px;
+  --t-col-max: 560px;
+  --t-touch: 44px;
+  --t-motion: 150ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}

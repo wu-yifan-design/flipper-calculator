@@ -152,3 +152,49 @@ test("Supabase mapping: event row matches schema columns, email never in events"
   // Non-email events produce one request.
   assert.equal(SupabaseMapper.requests({ ...payload, event: "page_visit", email: undefined }, "https://abc.supabase.co").length, 1);
 });
+
+test("A2HS banner: shows only on mobile, not standalone, not after dismissal", () => {
+  const { InstallBanner } = require("../js/install-banner.js");
+  const iosEnv = InstallBanner.env({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit Safari", maxTouchPoints: 5 }, () => false);
+  const androidEnv = InstallBanner.env({ userAgent: "Mozilla/5.0 (Linux; Android 15; Pixel 9) Chrome/140 Mobile Safari" }, () => false);
+  const desktopEnv = InstallBanner.env({ userAgent: "Mozilla/5.0 (X11; Linux x86_64) Chrome/140", maxTouchPoints: 0 }, () => false);
+  const standaloneEnv = InstallBanner.env({ userAgent: "Mozilla/5.0 (Linux; Android 15) Mobile" }, (q) => q.includes("standalone"));
+  const ipadEnv = InstallBanner.env({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari", maxTouchPoints: 5 }, () => false);
+  assert.equal(InstallBanner.variant(iosEnv, false, false), "ios");
+  assert.equal(InstallBanner.variant(ipadEnv, false, false), "ios");
+  assert.equal(InstallBanner.variant(androidEnv, false, false), null); // waits for beforeinstallprompt
+  assert.equal(InstallBanner.variant(androidEnv, false, true), "android");
+  assert.equal(InstallBanner.variant(desktopEnv, false, true), null);
+  assert.equal(InstallBanner.variant(standaloneEnv, false, true), null);
+  assert.equal(InstallBanner.variant(iosEnv, true, false), null);
+});
+
+test("every tracked event is allowed by the Supabase schema; serverEvents ⊆ schema", () => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const js = ["analytics.js", "app.js", "waitlist.js", "waitlist-page.js", "install-banner.js"]
+    .map((f) => fs.readFileSync(path.join(__dirname, "../js", f), "utf8")).join("\n");
+  const tracked = new Set([...js.matchAll(/Analytics\.track\("([a-z0-9_]+)"/g)].map((m) => m[1]));
+  tracked.add("calculated");
+  const schema = fs.readFileSync(path.join(__dirname, "../backend/supabase/schema.sql"), "utf8");
+  const migration = fs.readFileSync(path.join(__dirname, "../backend/supabase/migrations/002_a2hs_events.sql"), "utf8");
+  for (const e of tracked) {
+    assert.ok(schema.includes(`'${e}'`), `schema.sql missing ${e}`);
+    assert.ok(migration.includes(`'${e}'`), `migration missing ${e}`);
+  }
+  const cfg = require("../js/site-config.js");
+  for (const e of cfg.analytics.serverEvents) assert.ok(tracked.has(e), `serverEvents has unknown ${e}`);
+  for (const e of ["a2hs_shown", "a2hs_install_click", "a2hs_dismissed", "app_installed"]) assert.ok(tracked.has(e));
+});
+
+test("manifest is installable-shaped and never points at rates caching", () => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const m = JSON.parse(fs.readFileSync(path.join(__dirname, "../manifest.webmanifest"), "utf8"));
+  assert.ok(m.name && m.short_name && m.start_url && m.display === "standalone");
+  const sizes = m.icons.map((i) => i.sizes);
+  assert.ok(sizes.includes("192x192") && sizes.includes("512x512"));
+  for (const i of m.icons) assert.ok(fs.existsSync(path.join(__dirname, "..", i.src)), i.src);
+  const sw = fs.readFileSync(path.join(__dirname, "../sw.js"), "utf8");
+  assert.doesNotMatch(sw, /caches\.|cache\.put|addAll/);
+});

@@ -56,10 +56,10 @@
       const verified = RATES.status === "verified";
       b.className = "rates-banner" + (verified ? " ok" : " warn");
       b.title = RATES.source || "";
-      b.innerHTML = `Rates updated <strong>${RATES.updatedAt}</strong> · ` +
-        (verified
-          ? `<span class="tag">✓ Checked against eBay &amp; USPS fee pages</span>`
-          : `<span class="tag">Placeholder rates — pending verification</span>`);
+      const check = `<svg class="ico" viewBox="0 0 20 20" aria-hidden="true"><path d="M8.2 13.4 4.8 10l-1.1 1.1 4.5 4.5 8.4-8.4-1.1-1.1z" fill="currentColor"/></svg>`;
+      b.innerHTML = verified
+        ? `${check}<span><strong>Rates verified</strong> · Rates updated ${RATES.updatedAt} · eBay &amp; USPS fee pages</span>`
+        : `<span><strong>Placeholder rates — pending verification</strong> · Rates updated ${RATES.updatedAt}</span>`;
     }
 
     static renderShippingOptions() {
@@ -153,17 +153,18 @@
 
     static breakdownRows(b, opts = {}) {
       const r = (label, val, cls = "") => `<tr class="${cls}"><td>${label}</td><td>${val}</td></tr>`;
-      return `<table class="breakdown">
+      const netCls = b.net >= 0 ? "pos" : "neg";
+      return `<h3 class="section-title">Fee breakdown</h3><table class="breakdown">
         ${r(opts.priceLabel || "Sale price", Fmt.usd(b.gross - (opts.shipCharged || 0)))}
-        ${opts.shipCharged ? r("+ Shipping charged to buyer", Fmt.usd(opts.shipCharged)) : ""}
-        ${r("− Shipping label", Fmt.usd(-b.shippingCost), "neg")}
-        ${r("− Supplies", Fmt.usd(-b.supplies), "neg")}
-        ${r(`− eBay final value fee <small>${CalculatorPage.fvfNote(b.fvfBase)}</small>`, Fmt.usd(-b.fvfPercent), "neg")}
-        ${r("− eBay per-order fee", Fmt.usd(-b.perOrderFee), "neg")}
-        ${r(`− Promoted listing fee <small>${Fmt.pct(b.adFee && b.adBase ? b.adFee / b.adBase : 0)} of ${Fmt.usd(b.adBase)}</small>`, Fmt.usd(-b.adFee), "neg")}
-        ${r("= Payout after fees &amp; shipping", Fmt.usd(b.netBeforeCost), "sub")}
-        ${opts.showCost ? r("− Your buy cost", Fmt.usd(-b.buyCost), "neg") : ""}
-        ${opts.showCost ? r("= Net profit", Fmt.usd(b.net), "total") : ""}
+        ${opts.shipCharged ? r("Shipping charged to buyer", Fmt.usd(opts.shipCharged)) : ""}
+        ${r("Shipping label", Fmt.usd(-b.shippingCost), "neg")}
+        ${r("Supplies", Fmt.usd(-b.supplies), "neg")}
+        ${r(`eBay final value fee <small>${CalculatorPage.fvfNote(b.fvfBase)}</small>`, Fmt.usd(-b.fvfPercent), "neg")}
+        ${r("eBay per-order fee", Fmt.usd(-b.perOrderFee), "neg")}
+        ${r(`Promoted listing fee <small>${Fmt.pct(b.adFee && b.adBase ? b.adFee / b.adBase : 0)} of ${Fmt.usd(b.adBase)}</small>`, Fmt.usd(-b.adFee), "neg")}
+        ${r("Payout after fees &amp; shipping", Fmt.usd(b.netBeforeCost), opts.showCost ? "sub" : "total pos")}
+        ${opts.showCost ? r("Your buy cost", Fmt.usd(-b.buyCost), "neg") : ""}
+        ${opts.showCost ? r("Net profit", Fmt.usd(b.net), "total " + netCls) : ""}
       </table>`;
     }
 
@@ -175,8 +176,13 @@
       return `${Fmt.pct(t1.rate)} of ${Fmt.usd(base)}${tax}`;
     }
 
-    static setResult(id, label, value, note, tone = "") {
-      CalculatorPage.el(id).innerHTML = `<div class="result ${tone}"><div class="r-label">${label}</div><div class="r-value">${value}</div>${note ? `<div class="r-note">${note}</div>` : ""}</div>`;
+    static setResult(id, label, value, note, tone = "", badge = "") {
+      const badgeCls = tone === "good" ? "badge-success" : tone === "bad" ? "badge-critical" : "";
+      CalculatorPage.el(id).innerHTML = `<div class="result ${tone}">
+        <div class="r-label">${label}</div>
+        <div class="r-value">${value}</div>
+        ${badge ? `<span class="badge ${badgeCls}">${badge}</span>` : ""}
+        ${note ? `<div class="r-note">${note}</div>` : ""}</div>`;
     }
 
     static needPrice(target) {
@@ -191,9 +197,9 @@
       const t = Money.num(v.targetProfit);
       if (res.profitable) {
         CalculatorPage.setResult("buy-result", "Max buy price", Fmt.usd(res.maxBuy),
-          `Pay ${Fmt.usd(res.maxBuy)} or less to make at least ${Fmt.usd(t)}.`, "good");
+          `Pay ${Fmt.usd(res.maxBuy)} or less to make at least ${Fmt.usd(t)}.`, "good", "Profitable");
       } else {
-        CalculatorPage.setResult("buy-result", "Max buy price", "Pass", `Even at $0 you'd make ${Fmt.usd(res.breakdown.netBeforeCost)} — below your ${Fmt.usd(t)} target.`, "bad");
+        CalculatorPage.setResult("buy-result", "Max buy price", "Pass", `Even at $0 you'd make ${Fmt.usd(res.breakdown.netBeforeCost)} — below your ${Fmt.usd(t)} target.`, "bad", "Below target");
       }
       CalculatorPage.el("buy-result-bd").innerHTML = CalculatorPage.breakdownRows(res.breakdown, { shipCharged: input.shippingCharged });
       return true;
@@ -203,22 +209,27 @@
       const res = FeeCalculator.minAcceptableOffer(input, v.floorProfit, RATES);
       const f = Money.num(v.floorProfit);
       if (!res.reachable) {
-        CalculatorPage.setResult("offer-result", "Lowest offer to accept", "—", "Can't reach that floor.", "bad");
+        CalculatorPage.setResult("offer-result", "Lowest offer to accept", "—", "Can't reach that floor.", "bad", "Unreachable");
         CalculatorPage.el("offer-result-bd").innerHTML = "";
         return false;
       }
       let note = `Accept offers of ${Fmt.usd(res.minOffer)} or more (nets ≥ ${Fmt.usd(f)}). Lower? Counter at ${Fmt.usd(res.minOffer)}.`;
       let tone = "good";
+      let badge = `Floor ${Fmt.usd(f)} profit`;
       const offer = Money.num(v.offer, NaN);
       if (Number.isFinite(offer) && offer > 0) {
         const net = FeeCalculator.breakdown({ ...input, itemPrice: offer }, RATES).net;
-        if (offer >= res.minOffer) note = `✅ Accept ${Fmt.usd(offer)} — you net ${Fmt.usd(net)}.`;
+        if (offer >= res.minOffer) {
+          note = `Accept ${Fmt.usd(offer)} — you net ${Fmt.usd(net)}.`;
+          badge = "Accept offer";
+        }
         else {
-          note = `❌ ${Fmt.usd(offer)} nets only ${Fmt.usd(net)}. Counter at ${Fmt.usd(res.minOffer)}.`;
+          note = `${Fmt.usd(offer)} nets only ${Fmt.usd(net)}. Counter at ${Fmt.usd(res.minOffer)}.`;
           tone = "bad";
+          badge = "Counter";
         }
       }
-      CalculatorPage.setResult("offer-result", "Lowest offer to accept", Fmt.usd(res.minOffer), note, tone);
+      CalculatorPage.setResult("offer-result", "Lowest offer to accept", Fmt.usd(res.minOffer), note, tone, badge);
       CalculatorPage.el("offer-result-bd").innerHTML = CalculatorPage.breakdownRows(res.breakdown, {
         priceLabel: "Offer (item price)", shipCharged: input.shippingCharged, showCost: true,
       });
@@ -233,7 +244,7 @@
       const mbA = FeeCalculator.maxBuyPrice({ ...input, adRate: a }, v.targetProfit, RATES).maxBuy;
       const mbB = FeeCalculator.maxBuyPrice({ ...input, adRate: b }, v.targetProfit, RATES).maxBuy;
       const row = (label, x, y, d) =>
-        `<tr><td>${label}</td><td>${x}</td><td>${y}</td><td class="${d < 0 ? "neg" : ""}">${d == null ? "—" : (d > 0 ? "+" : "") + Fmt.usd(d)}</td></tr>`;
+        `<tr><td>${label}</td><td>${x}</td><td>${y}</td><td class="${d < 0 ? "neg" : d > 0 ? "up" : ""}">${d == null ? "—" : (d > 0 ? "+" : "") + Fmt.usd(d)}</td></tr>`;
       CalculatorPage.el("promo-result").innerHTML = `<table class="compare">
         <thead><tr><th></th><th>Ad ${Fmt.pct(a)}</th><th>Ad ${Fmt.pct(b)}</th><th>Δ</th></tr></thead>
         <tbody>

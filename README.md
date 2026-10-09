@@ -16,6 +16,9 @@ Static, mobile-first, no build step. Open `index.html` via any static host.
 | `backend/supabase/schema.sql` | Supabase tables (insert-only for anon) + `daily_metrics(p_key, p_days)` RPC. Read key is a placeholder — set it in Supabase, never in the repo |
 | `scripts/daily-metrics.mjs` | Prints daily metrics by source + kill-line progress (env: SUPABASE_URL, SUPABASE_ANON_KEY, METRICS_KEY) |
 | `tests/fees.test.js` | `node --test tests/` |
+| `design.md`, `assets/tokens.css` | Design spec + tokens (Polaris-style) |
+| `manifest.webmanifest`, `assets/icons/`, `sw.js`, `js/install-banner.js` | Add to Home Screen. `sw.js` caches nothing (navigation network-first only). |
+| `backend/supabase/migrations/002_a2hs_events.sql` | Allows a2hs_* / app_installed events; then add them to `serverEvents` in site-config |
 
 ## Math
 fees base = item price + shipping charged + buyer sales tax (eBay charges on tax too — flags in rates.js).
