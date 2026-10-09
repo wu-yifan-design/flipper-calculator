@@ -20,9 +20,10 @@
       endpoint: "", // only for provider "webhook"
       // Events the backend accepts. The Supabase events table has a CHECK constraint on
       // `event`; events not listed here are only logged locally (no failing 400s).
-      // After running backend/supabase/migrations/002_a2hs_events.sql, add:
+      // a2hs_* / app_installed enabled after migrations/002_a2hs_events.sql (applied 2026-10-09):
       //   "a2hs_shown", "a2hs_install_click", "a2hs_dismissed", "app_installed"
-      serverEvents: ["page_visit", "calculated", "email_submitted", "preorder_click"],
+      serverEvents: ["page_visit", "calculated", "email_submitted", "preorder_click",
+        "a2hs_shown", "a2hs_install_click", "a2hs_dismissed", "app_installed"],
       site: "flipper-calculator",
     },
     // Waitlist products. Day-8 page = add a new HTML file from waitlist-template
